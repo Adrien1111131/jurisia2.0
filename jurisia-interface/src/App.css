@@ -1,0 +1,42 @@
+/* Styles globaux pour l'application Jurisia */
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Styles pour les liens actifs dans la navigation */
+.active-link {
+  color: #6a11cb !important;
+  font-weight: bold;
+}
+
+/* Styles pour les boutons et éléments interactifs */
+button, 
+.button {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover, 
+.button:hover {
+  transform: translateY(-2px);
+}
+
+/* Styles pour les cartes et conteneurs */
+.card {
+  background: rgba(45, 45, 66, 0.5);
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(106, 17, 203, 0.2);
+}
+
+/* Styles pour les titres avec dégradé */
+.gradient-text {
+  background: linear-gradient(45deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
