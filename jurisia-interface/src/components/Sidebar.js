@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaHome, FaFileAlt, FaEdit, FaSearch, FaComments, FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import logoImage from '../assets/logo-new.png';
 
 // Composant Sidebar stylisé
 const SidebarContainer = styled.div`
@@ -29,20 +30,25 @@ const SidebarContainer = styled.div`
 `;
 
 const Logo = styled.div`
-  font-size: 28px;
-  font-weight: bold;
-  padding: 0 20px 20px;
+  padding: 10px 20px 20px;
   margin-bottom: 20px;
   border-bottom: 1px solid #2d2d42;
   text-align: center;
-  background: linear-gradient(45deg, #6a11cb, #2575fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 15px rgba(106, 17, 203, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    max-height: 80px;
+    filter: drop-shadow(0 0 10px rgba(106, 17, 203, 0.3));
+  }
   
   @media (max-width: 576px) {
-    font-size: 24px;
+    img {
+      max-height: 60px;
+    }
   }
 `;
 
@@ -148,7 +154,9 @@ const Sidebar = () => {
 
   return (
     <SidebarContainer>
-      <Logo>JURISIA</Logo>
+      <Logo>
+        <img src={logoImage} alt="Jurisia Logo" />
+      </Logo>
       
       <MenuItem>
         <MenuLink to="/">
