@@ -89,6 +89,8 @@ Ces prompts sont configurés dans le fichier `src/config/prompts.js`.
 
 ## Déploiement
 
+### Déploiement local
+
 Pour construire l'application pour la production :
 
 ```bash
@@ -96,6 +98,21 @@ npm run build
 ```
 
 Les fichiers générés seront placés dans le dossier `build/`.
+
+### Déploiement sur Vercel
+
+Cette application est configurée pour être déployée sur Vercel. Pour déployer l'application sur Vercel :
+
+1. Connectez votre dépôt GitHub à Vercel
+2. Configurez les variables d'environnement dans le tableau de bord Vercel :
+   - `REACT_APP_OPENAI_API_KEY` : Votre clé API OpenAI
+
+La configuration Vercel est déjà définie dans le fichier `vercel.json` à la racine du projet, avec :
+- La commande de build appropriée
+- Le répertoire de sortie
+- Les routes pour le routage côté client
+
+Vercel détectera automatiquement que c'est une application React et utilisera la configuration du fichier `vercel.json`.
 
 ## Licence
 
