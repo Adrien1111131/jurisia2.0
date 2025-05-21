@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { FaPaperPlane, FaUpload, FaFile, FaCheck, FaMagic } from 'react-icons/fa';
+import { FaPaperPlane, FaUpload, FaFile, FaCheck, FaMagic, FaSpinner } from 'react-icons/fa';
+import PromptService from '../services/promptService';
 
 const PromptContainer = styled.div`
   padding: 20px;
@@ -276,12 +277,75 @@ const HiddenInput = styled.input`
 
 
 
+// Composant pour afficher la réponse
+const ResponseContainer = styled.div`
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(42, 47, 69, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(106, 17, 203, 0.3);
+`;
+
+const ResponseTitle = styled.h3`
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  
+  svg {
+    margin-right: 10px;
+    color: var(--primary-color);
+  }
+`;
+
+const ResponseContent = styled.div`
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-line;
+`;
+
+const LoadingSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  
+  svg {
+    animation: spin 1s linear infinite;
+    color: var(--primary-color);
+    font-size: 2rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+`;
+
 const PromptLibre = () => {
   const [file, setFile] = useState(null);
   const [promptText, setPromptText] = useState('Rédigez une mise en demeure pour un loyer impayé');
   const [improvedPrompt, setImprovedPrompt] = useState('');
   const [showImproved, setShowImproved] = useState(false);
   const fileInputRef = useRef(null);
+  
+  // États pour gérer les résultats, le chargement et les erreurs
+  const [response, setResponse] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isImproving, setIsImproving] = useState(false);
+  const [error, setError] = useState(null);
   
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -301,18 +365,28 @@ const PromptLibre = () => {
     }
   };
   
-  const improvePrompt = () => {
-    console.log("Amélioration du prompt:", promptText);
+  const improvePrompt = async () => {
+    // Vérifier si le prompt est vide
+    if (!promptText.trim()) {
+      setError("Veuillez entrer un prompt à améliorer.");
+      return;
+    }
     
-    // Si le promptText est vide, utiliser un exemple pour la démonstration
-    const textToImprove = promptText.trim() || "Rédigez une mise en demeure pour un loyer impayé";
+    // Réinitialiser les états
+    setError(null);
+    setIsImproving(true);
     
-    // Simuler l'amélioration du prompt (dans un cas réel, cela pourrait faire appel à une API)
-    const improved = enhancePrompt(textToImprove);
-    console.log("Prompt amélioré:", improved);
-    
-    setImprovedPrompt(improved);
-    setShowImproved(true);
+    try {
+      // Appeler le service d'amélioration de prompt
+      const result = await PromptService.improvePrompt(promptText);
+      setImprovedPrompt(result.improvedPrompt);
+      setShowImproved(true);
+    } catch (error) {
+      console.error("Erreur lors de l'amélioration du prompt:", error);
+      setError(error.message || "Une erreur est survenue lors de l'amélioration du prompt.");
+    } finally {
+      setIsImproving(false);
+    }
   };
   
   const useImprovedPrompt = () => {
@@ -320,36 +394,28 @@ const PromptLibre = () => {
     setShowImproved(false);
   };
   
-  // Fonction qui simule l'amélioration du prompt
-  const enhancePrompt = (originalPrompt) => {
-    // Cette fonction pourrait être remplacée par un appel API à un service d'IA
-    // Pour l'instant, nous ajoutons simplement des éléments pour rendre le prompt plus précis
-    
-    let improved = originalPrompt;
-    
-    // Ajouter des précisions juridiques si elles ne sont pas présentes
-    if (!improved.toLowerCase().includes('date')) {
-      improved += '\n\nVeuillez inclure les dates pertinentes.';
+  const handleSubmit = async () => {
+    // Vérifier si le prompt est vide
+    if (!promptText.trim()) {
+      setError("Veuillez entrer un prompt avant de soumettre.");
+      return;
     }
     
-    if (!improved.toLowerCase().includes('partie') && !improved.toLowerCase().includes('parties')) {
-      improved += '\n\nPrécisez les parties concernées avec leurs informations complètes.';
+    // Réinitialiser les états
+    setResponse(null);
+    setError(null);
+    setIsLoading(true);
+    
+    try {
+      // Appeler le service de traitement de prompt
+      const result = await PromptService.processPrompt(promptText, file);
+      setResponse(result);
+    } catch (error) {
+      console.error("Erreur lors du traitement du prompt:", error);
+      setError(error.message || "Une erreur est survenue lors du traitement du prompt.");
+    } finally {
+      setIsLoading(false);
     }
-    
-    if (!improved.toLowerCase().includes('montant') && 
-        !improved.toLowerCase().includes('somme') && 
-        !improved.toLowerCase().includes('euros') && 
-        !improved.toLowerCase().includes('€')) {
-      improved += '\n\nIndiquez les montants précis si applicable.';
-    }
-    
-    // Ajouter une demande de format spécifique
-    improved += '\n\nStructurez la réponse avec: introduction, faits, analyse juridique, et conclusion.';
-    
-    // Ajouter une demande de références juridiques
-    improved += '\n\nCitez les articles de loi et jurisprudences pertinents.';
-    
-    return improved;
   };
   
   return (
@@ -383,6 +449,11 @@ const PromptLibre = () => {
           </ImprovedPromptContainer>
         ) : null}
         
+        {/* Afficher les erreurs */}
+        {error && (
+          <ErrorMessage>{error}</ErrorMessage>
+        )}
+        
         <ButtonContainer>
           {file && (
             <FileInfo>
@@ -390,13 +461,31 @@ const PromptLibre = () => {
               <FileName>{file.name}</FileName>
             </FileInfo>
           )}
-          <Button>
-            <FaPaperPlane />
-            Soumettre
+          <Button onClick={handleSubmit} disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <FaSpinner />
+                Traitement...
+              </>
+            ) : (
+              <>
+                <FaPaperPlane />
+                Soumettre
+              </>
+            )}
           </Button>
-          <ImproveButton onClick={improvePrompt} title="Améliorer le prompt">
-            <FaMagic />
-            Améliorer
+          <ImproveButton onClick={improvePrompt} disabled={isImproving} title="Améliorer le prompt">
+            {isImproving ? (
+              <>
+                <FaSpinner />
+                Amélioration...
+              </>
+            ) : (
+              <>
+                <FaMagic />
+                Améliorer
+              </>
+            )}
           </ImproveButton>
           <FileUploadButton onClick={handleFileButtonClick} title="Joindre un document">
             <FaUpload />
@@ -408,6 +497,24 @@ const PromptLibre = () => {
             accept=".pdf,.doc,.docx,.txt"
           />
         </ButtonContainer>
+        
+        {/* Afficher le chargement */}
+        {isLoading && (
+          <LoadingSpinner>
+            <FaSpinner />
+          </LoadingSpinner>
+        )}
+        
+        {/* Afficher la réponse */}
+        {response && !isLoading && (
+          <ResponseContainer>
+            <ResponseTitle>
+              <FaPaperPlane />
+              Réponse
+            </ResponseTitle>
+            <ResponseContent>{response.response}</ResponseContent>
+          </ResponseContainer>
+        )}
       </Card>
     </PromptContainer>
   );

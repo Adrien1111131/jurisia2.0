@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FaSearch, FaFilter, FaLightbulb, FaHistory, FaBookmark, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaLightbulb, FaHistory, FaBookmark, FaChevronDown, FaChevronUp, FaSpinner } from 'react-icons/fa';
+import SearchService from '../services/searchService';
 
 const SearchContainer = styled.div`
   width: 100%;
@@ -115,7 +116,7 @@ const FilterButton = styled.button`
 const AdvancedFiltersToggle = styled.button`
   background: transparent;
   border: none;
-  color: var(--primary-color);
+  color: white;
   font-size: 14px;
   margin-top: 10px;
   cursor: pointer;
@@ -124,6 +125,7 @@ const AdvancedFiltersToggle = styled.button`
   
   svg {
     margin-left: 5px;
+    color: var(--primary-color);
   }
   
   &:hover {
@@ -309,19 +311,80 @@ const RecentSearchItem = styled.button`
   }
 `;
 
+// Composant pour afficher les résultats de recherche
+const ResultsContainer = styled.div`
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(42, 47, 69, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(106, 17, 203, 0.3);
+`;
+
+const ResultsTitle = styled.h3`
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: var(--text-primary);
+`;
+
+const ResultsContent = styled.div`
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-line;
+`;
+
+const LoadingSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  
+  svg {
+    animation: spin 1s linear infinite;
+    color: var(--primary-color);
+    font-size: 2rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+`;
+
 const SearchInterface = ({ documentType }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [assistantQuery, setAssistantQuery] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
-  // Simuler des recherches récentes
-  const recentSearches = [
-    "Responsabilité médicale",
-    "Article 1240 code civil",
-    "Cass. civ. 1re, 12 juin 2020",
-    "Bail commercial covid",
-    "Rupture abusive contrat"
-  ];
+  // États pour gérer les résultats, le chargement et les erreurs
+  const [searchResults, setSearchResults] = useState(null);
+  const [assistantResults, setAssistantResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [isAssistantLoading, setIsAssistantLoading] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+  const [assistantError, setAssistantError] = useState(null);
+  
+  // État pour les recherches récentes
+  const [recentSearches, setRecentSearches] = useState([]);
+  
+  // Fonction pour ajouter une recherche récente
+  const addRecentSearch = (query) => {
+    // Vérifier si la requête est déjà dans les recherches récentes
+    if (!recentSearches.includes(query) && query.trim() !== '') {
+      // Ajouter la nouvelle requête au début du tableau et limiter à 5 éléments
+      setRecentSearches(prev => [query, ...prev.filter(item => item !== query)].slice(0, 5));
+    }
+  };
   
   // État pour les filtres spécifiques à chaque type de document
   const [filters, setFilters] = useState({
@@ -355,15 +418,58 @@ const SearchInterface = ({ documentType }) => {
     }));
   };
   
-  const handleSearch = () => {
-    console.log('Recherche:', searchQuery);
-    console.log('Filtres:', filters);
-    // Ici, vous pourriez appeler une API pour effectuer la recherche
+  const handleSearch = async () => {
+    // Vérifier si la requête est vide
+    if (!searchQuery.trim()) {
+      setSearchError("Veuillez entrer une requête de recherche.");
+      return;
+    }
+    
+    // Réinitialiser les états
+    setSearchResults(null);
+    setSearchError(null);
+    setIsSearchLoading(true);
+    
+    try {
+      // Appeler le service de recherche
+      const results = await SearchService.search(documentType, searchQuery, filters);
+      setSearchResults(results);
+      
+      // Ajouter la requête aux recherches récentes
+      addRecentSearch(searchQuery);
+    } catch (error) {
+      console.error("Erreur lors de la recherche:", error);
+      setSearchError(error.message || "Une erreur est survenue lors de la recherche.");
+    } finally {
+      setIsSearchLoading(false);
+    }
   };
   
-  const handleAssistantSearch = () => {
-    console.log('Recherche assistée:', assistantQuery);
-    // Ici, vous pourriez appeler une API pour effectuer la recherche assistée
+  const handleAssistantSearch = async () => {
+    // Vérifier si la requête est vide
+    if (!assistantQuery.trim()) {
+      setAssistantError("Veuillez entrer une requête pour la recherche assistée.");
+      return;
+    }
+    
+    // Réinitialiser les états
+    setAssistantResults(null);
+    setAssistantError(null);
+    setIsAssistantLoading(true);
+    
+    try {
+      // Appeler le service de recherche assistée
+      const results = await SearchService.assistedSearch(documentType, assistantQuery);
+      setAssistantResults(results);
+      
+      // Ajouter la requête aux recherches récentes
+      addRecentSearch(assistantQuery);
+    } catch (error) {
+      console.error("Erreur lors de la recherche assistée:", error);
+      setAssistantError(error.message || "Une erreur est survenue lors de la recherche assistée.");
+    } finally {
+      setIsAssistantLoading(false);
+    }
   };
   
   // Déterminer les filtres à afficher en fonction du type de document
@@ -513,43 +619,86 @@ const SearchInterface = ({ documentType }) => {
     }
   };
   
+  // Fonction pour ajouter un filtre rapide à la recherche
+  const handleQuickFilterClick = (filterText) => {
+    // Si la barre de recherche est vide, on ajoute simplement le filtre
+    // Sinon, on ajoute le filtre avec un espace avant
+    const newSearchQuery = searchQuery.trim() === '' 
+      ? filterText 
+      : `${searchQuery} ${filterText}`;
+    
+    setSearchQuery(newSearchQuery);
+  };
+  
   // Déterminer les filtres rapides à afficher en fonction du type de document
   const renderQuickFilters = () => {
     switch(documentType) {
       case 'jurisprudence':
         return (
           <>
-            <FilterButton>Cour de cassation</FilterButton>
-            <FilterButton>Conseil d'État</FilterButton>
-            <FilterButton>Derniers 6 mois</FilterButton>
-            <FilterButton>Décisions importantes</FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Cour de cassation")}>
+              Cour de cassation
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Conseil d'État")}>
+              Conseil d'État
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Derniers 6 mois")}>
+              Derniers 6 mois
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Décisions importantes")}>
+              Décisions importantes
+            </FilterButton>
           </>
         );
       case 'doctrine':
         return (
           <>
-            <FilterButton>Articles récents</FilterButton>
-            <FilterButton>Commentaires d'arrêts</FilterButton>
-            <FilterButton>Revues prestigieuses</FilterButton>
-            <FilterButton>Thèses</FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Articles récents")}>
+              Articles récents
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Commentaires d'arrêts")}>
+              Commentaires d'arrêts
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Revues prestigieuses")}>
+              Revues prestigieuses
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Thèses")}>
+              Thèses
+            </FilterButton>
           </>
         );
       case 'legislation':
         return (
           <>
-            <FilterButton>Code civil</FilterButton>
-            <FilterButton>Code de commerce</FilterButton>
-            <FilterButton>Lois récentes</FilterButton>
-            <FilterButton>Projets de loi</FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Code civil")}>
+              Code civil
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Code de commerce")}>
+              Code de commerce
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Lois récentes")}>
+              Lois récentes
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Projets de loi")}>
+              Projets de loi
+            </FilterButton>
           </>
         );
       case 'esg':
         return (
           <>
-            <FilterButton>Droits Humains</FilterButton>
-            <FilterButton>OCDE Guidelines</FilterButton>
-            <FilterButton>Environnement</FilterButton>
-            <FilterButton>Gouvernance</FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Droits Humains")}>
+              Droits Humains
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("OCDE Guidelines")}>
+              OCDE Guidelines
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Environnement")}>
+              Environnement
+            </FilterButton>
+            <FilterButton onClick={() => handleQuickFilterClick("Gouvernance")}>
+              Gouvernance
+            </FilterButton>
           </>
         );
       default:
@@ -561,13 +710,13 @@ const SearchInterface = ({ documentType }) => {
   const getSearchPlaceholder = () => {
     switch(documentType) {
       case 'jurisprudence':
-        return "Rechercher une décision (ex: responsabilité médicale, Cass. civ. 1re, 12 juin 2020...)";
+        return "Rechercher une décision (ex: Cass. civ. 1re, pourvoi n°18-23.471, responsabilité médicale)";
       case 'doctrine':
-        return "Rechercher un article, commentaire ou analyse juridique...";
+        return "Rechercher un article, commentaire ou analyse (ex: Dalloz 2023, p.145, réforme du droit des contrats)";
       case 'legislation':
-        return "Rechercher une loi, un code ou un règlement...";
+        return "Rechercher une loi, un code ou un règlement (ex: Code civil art. 1240, responsabilité délictuelle)";
       case 'esg':
-        return "Rechercher des normes ESG, directives sur les droits humains ou principes OCDE...";
+        return "Rechercher des normes ESG (ex: Principes directeurs OCDE 2011, devoir de vigilance)";
       default:
         return "Rechercher...";
     }
@@ -577,15 +726,15 @@ const SearchInterface = ({ documentType }) => {
   const getAssistantPlaceholder = () => {
     switch(documentType) {
       case 'jurisprudence':
-        return "Décrivez ce que vous recherchez ou posez une question juridique (ex: Je cherche des arrêts récents sur la responsabilité médicale en cas d'erreur de diagnostic...)";
+        return "Décrivez précisément votre recherche (ex: Je cherche les arrêts de la Cour de cassation de 2022-2023 sur la responsabilité médicale en cas d'erreur de diagnostic ayant entraîné un préjudice d'anxiété)";
       case 'doctrine':
-        return "Décrivez ce que vous recherchez ou posez une question juridique (ex: Je cherche des analyses sur l'évolution récente du droit des contrats...)";
+        return "Décrivez précisément votre recherche (ex: Je recherche des commentaires doctrinaux récents sur l'article 1195 du Code civil relatif à l'imprévision dans les contrats commerciaux, particulièrement ceux publiés dans la Revue Trimestrielle de Droit Civil)";
       case 'legislation':
-        return "Décrivez ce que vous recherchez ou posez une question juridique (ex: Quelles sont les dispositions légales concernant le délai de rétractation pour un achat en ligne ?)";
+        return "Décrivez précisément votre recherche (ex: Je souhaite connaître les dispositions du Code de la consommation concernant le délai de rétractation pour les achats en ligne, ainsi que les modifications législatives récentes sur ce sujet)";
       case 'esg':
-        return "Décrivez ce que vous recherchez ou posez une question (ex: Quelles sont les obligations de diligence raisonnable en matière de droits humains pour les entreprises suisses ?)";
+        return "Décrivez précisément votre recherche (ex: Je recherche les obligations de diligence raisonnable en matière de droits humains pour les entreprises suisses selon la loi fédérale et les principes directeurs de l'OCDE, notamment concernant les chaînes d'approvisionnement)";
       default:
-        return "Décrivez ce que vous recherchez...";
+        return "Décrivez précisément ce que vous recherchez...";
     }
   };
   
@@ -642,25 +791,56 @@ const SearchInterface = ({ documentType }) => {
         </AdvancedFiltersContainer>
         
         <ButtonContainer>
-          <SearchButton onClick={handleSearch}>
-            <FaSearch />
-            Rechercher
+          <SearchButton onClick={handleSearch} disabled={isSearchLoading}>
+            {isSearchLoading ? (
+              <>
+                <FaSpinner />
+                Recherche en cours...
+              </>
+            ) : (
+              <>
+                <FaSearch />
+                Rechercher
+              </>
+            )}
           </SearchButton>
         </ButtonContainer>
         
-        <RecentSearchesContainer>
-          <RecentSearchesTitle>
-            <FaHistory />
-            Recherches récentes
-          </RecentSearchesTitle>
-          <RecentSearchesList>
-            {recentSearches.map((search, index) => (
-              <RecentSearchItem key={index} onClick={() => setSearchQuery(search)}>
-                {search}
-              </RecentSearchItem>
-            ))}
-          </RecentSearchesList>
-        </RecentSearchesContainer>
+        {/* Afficher les erreurs de recherche */}
+        {searchError && (
+          <ErrorMessage>{searchError}</ErrorMessage>
+        )}
+        
+        {/* Afficher les résultats de recherche */}
+        {isSearchLoading && (
+          <LoadingSpinner>
+            <FaSpinner />
+          </LoadingSpinner>
+        )}
+        
+        {searchResults && !isSearchLoading && (
+          <ResultsContainer>
+            <ResultsTitle>Résultats de recherche pour "{searchResults.query}"</ResultsTitle>
+            <ResultsContent>{searchResults.results}</ResultsContent>
+          </ResultsContainer>
+        )}
+        
+        {/* Afficher les recherches récentes seulement s'il y en a */}
+        {recentSearches.length > 0 && (
+          <RecentSearchesContainer>
+            <RecentSearchesTitle>
+              <FaHistory />
+              Recherches récentes
+            </RecentSearchesTitle>
+            <RecentSearchesList>
+              {recentSearches.map((search, index) => (
+                <RecentSearchItem key={index} onClick={() => setSearchQuery(search)}>
+                  {search}
+                </RecentSearchItem>
+              ))}
+            </RecentSearchesList>
+          </RecentSearchesContainer>
+        )}
       </SearchBox>
       
       {/* Recherche assistée */}
@@ -675,11 +855,39 @@ const SearchInterface = ({ documentType }) => {
           onChange={(e) => setAssistantQuery(e.target.value)}
         />
         <ButtonContainer>
-          <SearchButton onClick={handleAssistantSearch}>
-            <FaLightbulb />
-            Rechercher avec l'assistant
+          <SearchButton onClick={handleAssistantSearch} disabled={isAssistantLoading}>
+            {isAssistantLoading ? (
+              <>
+                <FaSpinner />
+                Recherche en cours...
+              </>
+            ) : (
+              <>
+                <FaLightbulb />
+                Rechercher avec l'assistant
+              </>
+            )}
           </SearchButton>
         </ButtonContainer>
+        
+        {/* Afficher les erreurs de recherche assistée */}
+        {assistantError && (
+          <ErrorMessage>{assistantError}</ErrorMessage>
+        )}
+        
+        {/* Afficher les résultats de recherche assistée */}
+        {isAssistantLoading && (
+          <LoadingSpinner>
+            <FaSpinner />
+          </LoadingSpinner>
+        )}
+        
+        {assistantResults && !isAssistantLoading && (
+          <ResultsContainer>
+            <ResultsTitle>Résultats de la recherche assistée</ResultsTitle>
+            <ResultsContent>{assistantResults.results}</ResultsContent>
+          </ResultsContainer>
+        )}
       </SearchBox>
     </SearchContainer>
   );

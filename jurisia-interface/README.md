@@ -1,70 +1,102 @@
-# Getting Started with Create React App
+# Jurisia - Interface d'Assistant Juridique IA
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Jurisia est une interface web moderne permettant d'accéder à des fonctionnalités d'assistance juridique alimentées par l'intelligence artificielle.
 
-## Available Scripts
+## Fonctionnalités
 
-In the project directory, you can run:
+- **Résumé de documents juridiques** : Téléchargez un document juridique pour en obtenir un résumé automatique.
+- **Rédaction de documents** : Générez différents types de documents juridiques :
+  - Contrats
+  - Mises en demeure
+  - Courriers juridiques
+  - Documents de conformité FINMA
+  - Politiques AML/KYC
+- **Recherche documentaire** : Accédez à des bases de données juridiques :
+  - Jurisprudence
+  - Doctrine
+  - Législation
+  - ESG/Droits humains
+- **Prompt libre** : Interface conversationnelle pour des questions juridiques personnalisées.
 
-### `npm start`
+## Configuration
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prérequis
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js (v14 ou supérieur)
+- npm ou yarn
+- Clé API OpenAI
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clonez ce dépôt :
+```bash
+git clone https://github.com/votre-organisation/jurisia-interface.git
+cd jurisia-interface
+```
 
-### `npm run build`
+2. Installez les dépendances :
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Créez un fichier `.env` à la racine du projet avec votre clé API OpenAI :
+```
+REACT_APP_OPENAI_API_KEY=votre_cle_api_openai_ici
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Configuration de Google Docs/Drive (optionnel)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Pour la génération de documents avec export vers Google Docs, configurez les variables d'environnement suivantes :
 
-### `npm run eject`
+```
+GOOGLE_APPLICATION_CREDENTIALS=chemin/vers/votre/credentials.json
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Ou pour un déploiement en production :
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+GOOGLE_CREDENTIALS_JSON={"client_email":"...","private_key":"..."}
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Démarrage
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Pour lancer l'application en mode développement :
 
-## Learn More
+```bash
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+L'application sera accessible à l'adresse [http://localhost:3000](http://localhost:3000).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Architecture
 
-### Code Splitting
+- **src/components/** : Composants React réutilisables
+- **src/pages/** : Pages de l'application
+- **src/services/** : Services pour l'interaction avec les APIs
+- **src/config/** : Configuration de l'application
+  - **api.js** : Configuration des APIs (OpenAI, Google)
+  - **prompts.js** : Prompts système pour les différentes fonctionnalités
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Prompts Système
 
-### Analyzing the Bundle Size
+L'application utilise des prompts système spécifiques pour chaque fonctionnalité :
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **Résumé de documents** : Analyse et synthèse de documents juridiques
+- **Recherche documentaire** : Prompts spécifiques pour chaque type de recherche (jurisprudence, doctrine, etc.)
+- **Prompt libre** : Interface conversationnelle générique
 
-### Making a Progressive Web App
+Ces prompts sont configurés dans le fichier `src/config/prompts.js`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Déploiement
 
-### Advanced Configuration
+Pour construire l'application pour la production :
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+npm run build
+```
 
-### Deployment
+Les fichiers générés seront placés dans le dossier `build/`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Licence
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[Insérer informations de licence]
