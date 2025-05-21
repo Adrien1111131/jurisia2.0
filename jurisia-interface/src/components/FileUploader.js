@@ -52,6 +52,11 @@ const UploadHint = styled.p`
   font-size: 0.9rem;
 `;
 
+const RestrictedFormatHint = styled(UploadHint)`
+  color: #ffcc00;
+  font-weight: 500;
+`;
+
 const Button = styled.button`
   background: linear-gradient(45deg, #6a11cb, #2575fc);
   color: white;
@@ -135,7 +140,7 @@ const SuccessMessage = styled.div`
   }
 `;
 
-const FileUploader = ({ onFileUpload, acceptedFileTypes = ".pdf,.doc,.docx,.txt" }) => {
+const FileUploader = ({ onFileUpload, acceptedFileTypes = ".pdf,.doc,.docx,.txt,.xlsx,.xls" }) => {
   const [file, setFile] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
   
@@ -190,7 +195,11 @@ const FileUploader = ({ onFileUpload, acceptedFileTypes = ".pdf,.doc,.docx,.txt"
           <FaUpload />
         </UploadIcon>
         <UploadText>Glissez-déposez votre fichier ici ou cliquez pour parcourir</UploadText>
-        <UploadHint>Formats acceptés: PDF, DOC, DOCX, TXT</UploadHint>
+        {acceptedFileTypes === ".txt,.docx" ? (
+          <RestrictedFormatHint>Formats acceptés: TXT, DOCX uniquement</RestrictedFormatHint>
+        ) : (
+          <UploadHint>Formats acceptés: PDF, DOC, DOCX, TXT, XLSX, XLS</UploadHint>
+        )}
       </UploadArea>
       
       {file && (
