@@ -1,0 +1,74 @@
+/* Styles d'impression pour les documents juridiques */
+@media print {
+  /* Cacher tous les éléments sauf le document */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Afficher uniquement le document */
+  .document-juridique,
+  .document-juridique * {
+    visibility: visible;
+  }
+
+  /* Positionner le document en haut de la page */
+  .document-juridique {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 20mm;
+    margin: 0;
+    box-shadow: none;
+    background: white;
+  }
+
+  /* Styles spécifiques pour l'impression */
+  .document-juridique h1 {
+    font-size: 14pt;
+    margin-bottom: 20mm;
+  }
+
+  .document-juridique h2 {
+    font-size: 12pt;
+    margin-top: 10mm;
+    margin-bottom: 5mm;
+  }
+
+  .document-juridique p {
+    font-size: 11pt;
+    line-height: 1.5;
+    margin: 5mm 0;
+  }
+
+  .document-juridique .clause {
+    margin: 5mm 0;
+    padding-left: 10mm;
+  }
+
+  .document-juridique .section-special {
+    margin: 10mm 0;
+  }
+
+  /* Forcer les sauts de page après certaines sections */
+  .document-juridique h1,
+  .document-juridique .section-special {
+    page-break-after: avoid;
+  }
+
+  /* Éviter les sauts de page au milieu des clauses */
+  .document-juridique .clause {
+    page-break-inside: avoid;
+  }
+}
+
+/* Styles pour masquer les éléments lors de l'impression */
+@media print {
+  .Container,
+  .LoadingOverlay,
+  .ErrorMessage,
+  .DocumentActions,
+  .ActionButton {
+    display: none !important;
+  }
+}

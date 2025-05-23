@@ -1,0 +1,56 @@
+CONTRAT DE PRESTATION DE SERVICES
+
+Entre les soussignés :
+
+La société ABC Consulting, SARL au capital de 50 000 euros, immatriculée au RCS de Paris sous le numéro 123 456 789, dont le siège social est situé au 123 rue de la Paix, 75001 Paris, représentée par M. Jean Dupont en sa qualité de gérant,
+Ci-après dénommée "le Prestataire",
+
+ET
+
+La société XYZ Corp, SAS au capital de 100 000 euros, immatriculée au RCS de Paris sous le numéro 987 654 321, dont le siège social est situé au 456 avenue des Champs-Élysées, 75008 Paris, représentée par Mme Marie Martin en sa qualité de Présidente,
+Ci-après dénommée "le Client",
+
+Il a été convenu ce qui suit :
+
+Article 1 - Objet du contrat
+Le présent contrat a pour objet la fourniture par le Prestataire au Client de services de conseil en stratégie digitale, comprenant :
+- Audit de la présence digitale
+- Définition de la stratégie
+- Accompagnement dans la mise en œuvre
+- Reporting mensuel
+
+Article 2 - Durée
+Le présent contrat est conclu pour une durée de 12 mois à compter du 1er juin 2025. Il pourra être renouvelé par accord écrit des parties.
+
+Article 3 - Prix et modalités de paiement
+Le prix des prestations est fixé à 5 000 euros HT par mois.
+Le paiement s'effectuera par virement bancaire à 30 jours fin de mois.
+
+Article 4 - Obligations du Prestataire
+Le Prestataire s'engage à :
+- Exécuter les prestations avec professionnalisme
+- Respecter les délais convenus
+- Maintenir une communication régulière
+- Garantir la confidentialité des informations
+
+Article 5 - Obligations du Client
+Le Client s'engage à :
+- Fournir les informations nécessaires
+- Collaborer activement
+- Respecter les délais de paiement
+- Désigner un interlocuteur privilégié
+
+Article 6 - Confidentialité
+Les parties s'engagent à maintenir confidentielles les informations échangées pendant toute la durée du contrat et pendant 2 ans après sa fin.
+
+Article 7 - Résiliation
+Le contrat pourra être résilié par l'une ou l'autre des parties en cas de manquement grave, avec un préavis de 3 mois.
+
+Article 8 - Droit applicable et juridiction
+Le présent contrat est soumis au droit français. Tout litige sera soumis aux tribunaux de Paris.
+
+Fait à Paris, le 23 mai 2025
+
+Pour le Prestataire                    Pour le Client
+Jean Dupont                            Marie Martin
+Gérant                                 Présidente

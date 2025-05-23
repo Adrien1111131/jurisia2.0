@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaHome, FaFileAlt, FaEdit, FaSearch, FaComments, FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import { FaHome, FaFileAlt, FaEdit, FaSearch, FaComments, FaChevronDown, FaChevronRight, FaGavel, FaBalanceScale, FaEnvelope, FaShieldAlt } from 'react-icons/fa';
 import logoImage from '../assets/logo-new.png';
 
-// Composant Sidebar stylisé
 const SidebarContainer = styled.div`
   width: 280px;
   height: 100vh;
@@ -109,22 +108,26 @@ const MenuLink = styled(Link)`
 const SubMenu = styled.div`
   padding-left: 20px;
   overflow: hidden;
-  max-height: ${({ $isOpen }) => ($isOpen ? '500px' : '0')};
-  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  max-height: ${({ $isOpen }) => ($isOpen ? '1000px' : '0')};
+  transition: all 0.3s ease-in-out;
   opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
+  visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
   background: rgba(30, 35, 50, 0.7);
   border-left: 1px solid rgba(106, 17, 203, 0.2);
   margin-left: 10px;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
 `;
 
 const SubMenuItem = styled.div`
-  padding: 10px 20px;
+  padding: 12px 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   transition: all 0.3s ease;
   border-left: 2px solid transparent;
+  margin: 2px 0;
   
   &:hover {
     background: rgba(48, 54, 82, 0.6);
@@ -133,10 +136,9 @@ const SubMenuItem = styled.div`
   }
   
   @media (max-width: 576px) {
-    padding: 10px 15px;
+    padding: 12px 15px;
   }
 `;
-
 
 const Sidebar = () => {
   const [subMenuOpen, setSubMenuOpen] = useState({
@@ -172,26 +174,43 @@ const Sidebar = () => {
         </MenuLink>
       </MenuItem>
       
-      <MenuItem onClick={() => toggleSubMenu('rediger')}>
-        <FaEdit />
-        Rédiger un document
-        {subMenuOpen.rediger ? <FaChevronDown style={{ marginLeft: 'auto' }} /> : <FaChevronRight style={{ marginLeft: 'auto' }} />}
+      <MenuItem onClick={() => toggleSubMenu('rediger')} style={{ cursor: 'pointer' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', color: 'var(--text-secondary)' }}>
+          <FaEdit style={{ marginRight: '12px' }} />
+          Rédiger un document
+          {subMenuOpen.rediger ? <FaChevronDown style={{ marginLeft: 'auto' }} /> : <FaChevronRight style={{ marginLeft: 'auto' }} />}
+        </div>
       </MenuItem>
-      <SubMenu $isOpen={subMenuOpen.rediger}>
+      <SubMenu $isOpen={subMenuOpen.rediger} style={{ maxHeight: subMenuOpen.rediger ? '1000px' : '0' }}>
         <SubMenuItem>
-          <MenuLink to="/rediger/contrat">Contrat</MenuLink>
+          <MenuLink to="/contrats-et-actes">
+            <FaGavel style={{ marginRight: '8px' }} />
+            Contrats et actes
+          </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
-          <MenuLink to="/rediger/mise-en-demeure">Mise en demeure</MenuLink>
+          <MenuLink to="/contentieux-arbitrage">
+            <FaBalanceScale style={{ marginRight: '8px' }} />
+            Contentieux et arbitrage
+          </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
-          <MenuLink to="/rediger/courrier">Courrier juridique</MenuLink>
+          <MenuLink to="/documents-internes">
+            <FaFileAlt style={{ marginRight: '8px' }} />
+            Documents internes et organisationnels
+          </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
-          <MenuLink to="/rediger/conformite-finma">Document de Conformité FINMA</MenuLink>
+          <MenuLink to="/correspondance-client">
+            <FaEnvelope style={{ marginRight: '8px' }} />
+            Correspondance et relation client
+          </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
-          <MenuLink to="/rediger/politique-aml-kyc">Politique AML / KYC</MenuLink>
+          <MenuLink to="/conformite-deontologie">
+            <FaShieldAlt style={{ marginRight: '8px' }} />
+            Conformité et déontologie
+          </MenuLink>
         </SubMenuItem>
       </SubMenu>
       

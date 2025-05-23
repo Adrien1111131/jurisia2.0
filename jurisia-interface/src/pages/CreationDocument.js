@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import DocumentGenerator from '../components/DocumentGenerator';
 
 const PageContainer = styled.div`
   padding: 20px;
@@ -40,16 +39,15 @@ const Description = styled.p`
   line-height: 1.6;
 `;
 
-const RedigerContrat = () => {
+const CreationDocument = () => {
   return (
     <PageContainer>
-      <Title>Rédiger un contrat</Title>
+      <Title>Création de document</Title>
       <Description>
-        Utilisez notre assistant pour rédiger un contrat professionnel. Remplissez le formulaire ci-dessous avec les informations nécessaires, et notre IA générera un contrat adapté à vos besoins.
+        Cette page est en cours de reconstruction. De nouvelles fonctionnalités seront bientôt disponibles.
       </Description>
-      <DocumentGenerator documentType="contrat" />
     </PageContainer>
   );
 };
 
-export default RedigerContrat;
+export default CreationDocument;

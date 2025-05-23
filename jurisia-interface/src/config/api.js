@@ -1,17 +1,43 @@
-import { OpenAI } from 'openai';
-
-// --- Configuration OpenAI ---
-export const openai = new OpenAI({
+// Configuration de l'API OpenAI
+export const openaiConfig = {
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true // Permet l'utilisation dans un navigateur
-});
+  baseUrl: 'https://api.openai.com/v1',
+  model: 'gpt-4',
+  defaultParams: {
+    temperature: 0.7,
+    max_tokens: 2000,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0
+  }
+};
 
-// Vérification de la clé API OpenAI
-if (!process.env.REACT_APP_OPENAI_API_KEY) {
-  console.error("Clé API OpenAI non configurée. Veuillez définir REACT_APP_OPENAI_API_KEY dans le fichier .env");
-}
+// Fonction utilitaire pour les appels à l'API OpenAI
+export const callOpenAI = async (endpoint, messages) => {
+  try {
+    const response = await fetch(`${openaiConfig.baseUrl}/${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openaiConfig.apiKey}`
+      },
+      body: JSON.stringify({
+        model: openaiConfig.model,
+        messages,
+        ...openaiConfig.defaultParams
+      })
+    });
 
-// Note: Les fonctionnalités Google Docs/Drive sont désactivées pour cette version simplifiée
-// car elles nécessitent un backend Node.js pour fonctionner correctement.
-export const docs = null;
-export const drive = null;
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Erreur OpenAI:', error);
+      throw new Error(`Erreur API: ${error.error?.message || response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } catch (error) {
+    console.error('Erreur lors de l\'appel à OpenAI:', error);
+    throw error;
+  }
+};

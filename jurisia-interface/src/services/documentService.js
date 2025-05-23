@@ -61,6 +61,12 @@ class DocumentService {
         }
       } else if (type.toLowerCase().includes('prompt libre')) {
         systemPrompt = PROMPTS.PROMPT_LIBRE;
+      } else if (type.toLowerCase().includes('clause')) {
+        systemPrompt = PROMPTS.REDACTION.CLAUSE;
+      } else if (type.toLowerCase().includes('contrat_specifique') || type.toLowerCase().includes('contrat spécifique')) {
+        systemPrompt = PROMPTS.REDACTION.CONTRAT_SPECIFIQUE;
+      } else if (type.toLowerCase().includes('acte_juridique') || type.toLowerCase().includes('acte juridique')) {
+        systemPrompt = PROMPTS.REDACTION.ACTE_JURIDIQUE;
       } else if (type.toLowerCase().includes('contrat')) {
         systemPrompt = PROMPTS.REDACTION.CONTRAT;
       } else if (type.toLowerCase().includes('mise en demeure') || type.toLowerCase().includes('mise_en_demeure')) {

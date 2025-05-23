@@ -1,165 +1,175 @@
-import { openai } from '../config/api';
-import PROMPTS from '../config/prompts';
+import { generateDocumentPrompt, validateFormData, formatFormData } from './promptService';
+import { callOpenAI } from '../config/api';
+import mammoth from 'mammoth';
 
-class ResumeService {
+export class ResumeService {
+  constructor() {
+    // Initialisation du service
+  }
+
   /**
-   * Résume un document juridique
-   * @param {File} file - Le fichier à résumer
-   * @returns {Promise<Object>} - Résultat du résumé
+   * Lit le contenu d'un fichier DOCX ou TXT
+   * @param {File} file - Le fichier à lire
+   * @returns {Promise<string>} Le contenu du fichier
    */
-  static async resumeDocument(file) {
+  async readFile(file) {
     try {
-      // Vérifier si un fichier a été fourni
-      if (!file) {
-        throw new Error("Aucun fichier fourni pour le résumé.");
+      if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        // Lire un fichier DOCX
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        return result.value;
+      } else {
+        // Lire un fichier TXT
+        return await file.text();
       }
-      
-      console.log(`Traitement du fichier: ${file.name}`);
-      
-      // Extraire le texte du fichier
-      let documentContent = "";
-      
-      try {
-        // Méthode d'extraction directe pour les fichiers texte
-        if (file.type === 'text/plain') {
-          documentContent = await this.extractTextFromTextFile(file);
-        } 
-        // Pour les fichiers PDF, utiliser une méthode simplifiée
-        else if (file.type === 'application/pdf') {
-          documentContent = await this.extractTextFromPDF(file);
-        }
-        // Pour les autres types de fichiers, utiliser une méthode générique
-        else {
-          documentContent = await this.extractTextGeneric(file);
-        }
-      } catch (extractionError) {
-        console.error("Erreur lors de l'extraction du texte:", extractionError);
-        documentContent = `[Impossible d'extraire le contenu du fichier ${file.name}. Erreur: ${extractionError.message}]`;
-      }
-      
-      // Si le contenu est vide ou trop court, utiliser un message d'erreur
-      if (!documentContent || documentContent.trim().length < 50) {
-        documentContent = `[Le contenu du fichier ${file.name} n'a pas pu être extrait correctement. Veuillez utiliser un format de fichier texte (.txt) pour de meilleurs résultats.]`;
-      }
-      
-      // Utiliser le prompt système pour le résumé
-      const systemPrompt = PROMPTS.RESUME;
-      
-      // Limiter la taille du contenu pour éviter de dépasser les limites de l'API OpenAI
-      const maxLength = 30000;
-      const truncatedContent = documentContent.length > maxLength 
-        ? documentContent.substring(0, maxLength) + "\n\n[Document tronqué en raison de sa taille...]"
-        : documentContent;
-      
-      // Appel à l'API OpenAI
-      console.log("Envoi du document à l'API OpenAI pour résumé...");
-      const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user",
-            content: `Résumez ce document juridique: ${truncatedContent}`
-          }
-        ],
-        temperature: 0.5,
-        max_tokens: 2000
-      });
-      
-      console.log("Résumé généré avec succès par l'API OpenAI");
-      
-      // Vérifier la réponse
-      if (!response || !response.choices || response.choices.length === 0) {
-        throw new Error("Aucune réponse valide reçue de l'API OpenAI.");
-      }
-      
-      // Retourner le résumé
-      return {
-        success: true,
-        summary: response.choices[0].message.content,
-        fileName: file.name
-      };
     } catch (error) {
-      console.error('Erreur lors du résumé du document:', error);
-      throw new Error(`Échec du résumé du document: ${error.message}`);
+      console.error('Erreur lors de la lecture du fichier:', error);
+      throw new Error('Erreur lors de la lecture du fichier. Veuillez réessayer.');
     }
   }
-  
+
   /**
-   * Extrait le texte d'un fichier texte
-   * @param {File} file - Le fichier texte
-   * @returns {Promise<string>} - Le texte extrait
+   * Résume un document juridique
+   * @param {string} document - Le document à résumer
+   * @param {Object} options - Options de résumé (longueur, focus, etc.)
+   * @returns {Promise<string>} Le résumé du document
    */
-  static async extractTextFromTextFile(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        try {
-          resolve(event.target.result);
-        } catch (error) {
-          reject(new Error(`Erreur lors de l'extraction du texte du fichier texte: ${error.message}`));
+  async resumeDocument(document, options = {}) {
+    try {
+      const messages = [
+        {
+          role: "system",
+          content: "Vous êtes un avocat expert spécialisé dans l'analyse et le résumé de documents juridiques."
+        },
+        {
+          role: "user",
+          content: `Analysez et résumez ce document juridique de manière concise et professionnelle.
+
+Instructions spécifiques :
+1. Identifiez le type de document et son objectif principal
+2. Extrayez les points clés et les dispositions importantes
+3. Mettez en évidence les obligations principales des parties
+4. Notez les dates et délais critiques
+5. Signalez les clauses particulières ou inhabituelles
+6. Identifiez les risques potentiels ou points d'attention
+
+Format du résumé :
+- Introduction : Type et nature du document
+- Parties impliquées
+- Points essentiels (max 5 points)
+- Obligations principales
+- Points d'attention particuliers
+- Conclusion/Recommandations
+
+Document à analyser :
+${document}`
         }
-      };
-      
-      reader.onerror = () => {
-        reject(new Error("Erreur lors de la lecture du fichier texte."));
-      };
-      
-      reader.readAsText(file);
-    });
+      ];
+
+      return await callOpenAI('chat/completions', messages);
+
+    } catch (error) {
+      console.error('Erreur lors du résumé du document:', error);
+      throw new Error('Erreur lors de la génération du résumé. Veuillez réessayer.');
+    }
   }
-  
+
   /**
-   * Extrait le texte d'un fichier PDF (méthode simplifiée)
-   * @param {File} file - Le fichier PDF
-   * @returns {Promise<string>} - Le texte extrait
+   * Extrait les points clés d'un document
+   * @param {string} document - Le document à analyser
+   * @returns {Promise<Array<string>>} Les points clés du document
    */
-  static async extractTextFromPDF(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+  async extractKeyPoints(document) {
+    try {
+      const messages = [
+        {
+          role: "system",
+          content: "Vous êtes un expert juridique spécialisé dans l'analyse de documents légaux."
+        },
+        {
+          role: "user",
+          content: `Analysez ce document juridique et extrayez-en les points clés les plus importants.
       
-      reader.onload = async (event) => {
-        try {
-          // Convertir le fichier en base64
-          const base64 = btoa(
-            new Uint8Array(event.target.result)
-              .reduce((data, byte) => data + String.fromCharCode(byte), '')
-          );
-          
-          // Utiliser l'API OpenAI pour extraire le texte
-          // Note: Ceci est une simulation, car l'API OpenAI ne peut pas traiter directement des fichiers binaires
-          resolve(`[Contenu du fichier PDF ${file.name}]
-          
-Ce document semble être un document juridique basé sur son extension. Veuillez noter que l'extraction de texte à partir de PDF dans le navigateur est limitée. Pour de meilleurs résultats, utilisez un fichier texte (.txt).`);
-        } catch (error) {
-          reject(new Error(`Erreur lors de l'extraction du texte du PDF: ${error.message}`));
+Document à analyser :
+${document}
+
+Instructions :
+1. Identifiez les 5-7 points les plus importants du document
+2. Pour chaque point, fournissez une explication concise
+3. Concentrez-vous sur les éléments juridiquement significatifs
+4. Incluez les obligations principales et les délais critiques`
         }
-      };
+      ];
+
+      const content = await callOpenAI('chat/completions', messages);
       
-      reader.onerror = () => {
-        reject(new Error("Erreur lors de la lecture du fichier PDF."));
-      };
-      
-      reader.readAsArrayBuffer(file);
-    });
+      return content
+        .split('\n')
+        .filter(point => point.trim())
+        .map(point => point.replace(/^\d+\.\s*/, '')); // Enlever les numéros au début
+
+    } catch (error) {
+      console.error('Erreur lors de l\'extraction des points clés:', error);
+      throw new Error('Erreur lors de l\'extraction des points clés. Veuillez réessayer.');
+    }
   }
-  
+
   /**
-   * Extrait le texte d'un fichier générique
-   * @param {File} file - Le fichier
-   * @returns {Promise<string>} - Le texte extrait
+   * Génère un résumé structuré d'un document
+   * @param {string} document - Le document à résumer
+   * @returns {Promise<Object>} Le résumé structuré
    */
-  static async extractTextGeneric(file) {
-    return new Promise((resolve) => {
-      resolve(`[Contenu du fichier ${file.name} (type: ${file.type})]
+  async generateStructuredSummary(document) {
+    try {
+      const messages = [
+        {
+          role: "system",
+          content: "Vous êtes un expert juridique spécialisé dans l'analyse et la synthèse de documents légaux."
+        },
+        {
+          role: "user",
+          content: `Générez un résumé structuré de ce document juridique en suivant le format spécifié.
+
+Document à analyser :
+${document}
+
+Format requis :
+1. Titre et type de document
+2. Résumé général (2-3 phrases)
+3. Points clés (liste numérotée)
+4. Obligations principales des parties
+5. Recommandations et points d'attention
+
+Instructions :
+- Soyez concis et précis
+- Utilisez un langage juridique professionnel
+- Mettez en évidence les éléments critiques
+- Incluez les dates et délais importants`
+        }
+      ];
+
+      const content = await callOpenAI('chat/completions', messages);
       
-Ce document semble être un document juridique basé sur son extension. Veuillez noter que l'extraction de texte à partir de ce type de fichier dans le navigateur est limitée. Pour de meilleurs résultats, utilisez un fichier texte (.txt).`);
-    });
+      // Parser le contenu en sections structurées
+      const sections = content.split('\n\n').filter(section => section.trim());
+      
+      return {
+        title: sections[0],
+        summary: sections[1],
+        keyPoints: sections[2].split('\n')
+          .filter(point => point.trim())
+          .map(point => point.replace(/^\d+\.\s*/, '')), // Enlever les numéros au début
+        recommendations: sections[3].split('\n')
+          .filter(rec => rec.trim())
+          .map(rec => rec.replace(/^[-•]\s*/, '')) // Enlever les puces au début
+      };
+
+    } catch (error) {
+      console.error('Erreur lors de la génération du résumé structuré:', error);
+      throw new Error('Erreur lors de la génération du résumé structuré. Veuillez réessayer.');
+    }
   }
 }
 
-export default ResumeService;
+export const resumeService = new ResumeService();
