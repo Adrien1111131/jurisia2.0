@@ -82,7 +82,7 @@ const RechercherDoctrine = () => {
         pour explorer la doctrine sur un sujet juridique particulier.
       </Description>
       <Card>
-        <SearchInterface documentType="doctrine" />
+        <SearchInterface type="doctrine" placeholder="Rechercher des articles et analyses juridiques..." />
       </Card>
     </PageContainer>
   );

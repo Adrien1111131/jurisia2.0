@@ -82,7 +82,7 @@ const RechercherLegislation = () => {
         pour explorer la législation sur un sujet juridique particulier.
       </Description>
       <Card>
-        <SearchInterface documentType="legislation" />
+        <SearchInterface type="legislation" placeholder="Rechercher des lois, codes et règlements..." />
       </Card>
     </PageContainer>
   );

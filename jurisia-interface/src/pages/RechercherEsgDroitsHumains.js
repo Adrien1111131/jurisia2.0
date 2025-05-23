@@ -82,7 +82,7 @@ const RechercherEsgDroitsHumains = () => {
         analyses sur la responsabilité sociale des entreprises et le développement durable.
       </Description>
       <Card>
-        <SearchInterface documentType="esg" />
+        <SearchInterface type="esg" placeholder="Rechercher des documents ESG, Droits Humains, OCDE..." />
       </Card>
     </PageContainer>
   );

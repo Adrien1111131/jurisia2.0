@@ -82,7 +82,7 @@ const RechercherJurisprudence = () => {
         pour explorer la jurisprudence sur un sujet juridique particulier.
       </Description>
       <Card>
-        <SearchInterface documentType="jurisprudence" />
+        <SearchInterface type="jurisprudence" placeholder="Rechercher une décision de justice..." />
       </Card>
     </PageContainer>
   );
