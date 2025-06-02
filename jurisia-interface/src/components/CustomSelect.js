@@ -20,10 +20,10 @@ const SelectContainer = styled.div`
 const SelectButton = styled.div`
   width: 100%;
   padding: 15px;
-  background: rgba(48, 54, 82, 0.6);
-  border: 1px solid rgba(106, 17, 203, 0.3);
+  background: rgba(72, 84, 120, 0.8);
+  border: 1px solid rgba(106, 17, 203, 0.5);
   border-radius: 8px;
-  color: var(--text-primary);
+  color: white;
   font-size: 1.1rem;
   cursor: pointer;
   display: flex;
@@ -32,7 +32,7 @@ const SelectButton = styled.div`
   transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(48, 54, 82, 0.8);
+    background: rgba(72, 84, 120, 1);
     border-color: var(--primary-color);
   }
 
@@ -54,8 +54,8 @@ const OptionsContainer = styled.div`
   left: ${props => props.$position?.left}px;
   right: auto;
   width: ${props => props.$position?.width}px;
-  background: rgba(42, 47, 69, 0.95);
-  border: 1px solid rgba(106, 17, 203, 0.3);
+  background: rgba(72, 84, 120, 0.98);
+  border: 1px solid rgba(106, 17, 203, 0.5);
   border-radius: 8px;
   max-height: 500px;
   overflow-y: auto;
@@ -106,13 +106,14 @@ const OptionsList = styled.div`
 
 const Option = styled.div`
   padding: 12px 15px;
-  color: var(--text-primary);
+  color: white;
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
 
   &:hover {
-    background: rgba(106, 17, 203, 0.3);
+    background: rgba(106, 17, 203, 0.5);
+    color: white;
   }
 
   ${props => props.$isSelected && `

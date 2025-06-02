@@ -31,10 +31,10 @@ const SearchInputContainer = styled.div`
 const SearchInput = styled.input`
   width: 100%;
   padding: 12px 12px 12px 45px;
-  background: rgba(48, 54, 82, 0.6);
-  border: 1px solid rgba(106, 17, 203, 0.3);
+  background: rgba(72, 84, 120, 0.8);
+  border: 1px solid rgba(106, 17, 203, 0.5);
   border-radius: 8px;
-  color: var(--text-primary);
+  color: white;
   font-size: 1.1rem;
   transition: all 0.3s ease;
   
@@ -42,7 +42,7 @@ const SearchInput = styled.input`
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 15px rgba(106, 17, 203, 0.3);
-    background: rgba(48, 54, 82, 0.8);
+    background: rgba(72, 84, 120, 1);
   }
 `;
 
@@ -275,9 +275,9 @@ const FiltersContainer = styled.div`
   margin-top: 15px;
   margin-bottom: 20px;
   padding: 15px;
-  background: rgba(42, 47, 69, 0.4);
+  background: rgba(72, 84, 120, 0.7);
   border-radius: 8px;
-  border: 1px solid rgba(106, 17, 203, 0.2);
+  border: 1px solid rgba(106, 17, 203, 0.4);
 `;
 
 const FilterGroup = styled.div`
@@ -288,29 +288,35 @@ const FilterGroup = styled.div`
 
 const FilterLabel = styled.label`
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: white;
+  font-weight: 500;
 `;
 
 const FilterSelect = styled.select`
   padding: 8px 10px;
-  background: rgba(48, 54, 82, 0.6);
-  border: 1px solid rgba(106, 17, 203, 0.3);
+  background: rgba(72, 84, 120, 0.8);
+  border: 1px solid rgba(106, 17, 203, 0.5);
   border-radius: 6px;
-  color: var(--text-primary);
+  color: white;
   font-size: 0.9rem;
   
   &:focus {
     outline: none;
     border-color: var(--primary-color);
   }
+  
+  option {
+    background: rgba(72, 84, 120, 1);
+    color: white;
+  }
 `;
 
 const FilterInput = styled.input`
   padding: 8px 10px;
-  background: rgba(48, 54, 82, 0.6);
-  border: 1px solid rgba(106, 17, 203, 0.3);
+  background: rgba(72, 84, 120, 0.8);
+  border: 1px solid rgba(106, 17, 203, 0.5);
   border-radius: 6px;
-  color: var(--text-primary);
+  color: white;
   font-size: 0.9rem;
   
   &:focus {
@@ -325,7 +331,7 @@ const DateRangeContainer = styled.div`
   align-items: center;
   
   span {
-    color: var(--text-secondary);
+    color: white;
   }
 `;
 
