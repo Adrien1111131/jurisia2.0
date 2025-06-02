@@ -18,6 +18,8 @@
 .env.development.local
 .env.test.local
 .env.production.local
+# Ne pas ignorer le fichier d'exemple pour les variables d'environnement
+!.env.example
 
 npm-debug.log*
 yarn-debug.log*

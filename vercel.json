@@ -1,6 +1,6 @@
 {
   "framework": "create-react-app",
-  "buildCommand": "cd jurisia-interface && npm install openai && npm install && npm run build",
+  "buildCommand": "cd jurisia-interface && cp package.vercel.json package.json && npm install && npm run build",
   "outputDirectory": "jurisia-interface/build",
   "routes": [
     {
@@ -31,5 +31,8 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "REACT_APP_OPENAI_API_KEY": "@openai_api_key"
+  }
 }
