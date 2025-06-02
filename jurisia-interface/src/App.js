@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import Home from './pages/Home';
 import ResumerDocument from './pages/ResumerDocument';
 import RedigerContrat from './pages/RedigerContrat';
@@ -27,9 +29,11 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
-      <Layout>
-        <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <Layout>
+            <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/resumer" element={<ResumerDocument />} />
           <Route path="/rediger/contrat" element={<RedigerContrat />} />
@@ -52,9 +56,11 @@ function App() {
           <Route path="/rechercher/legislation" element={<RechercherLegislation />} />
           <Route path="/rechercher/esg-droits-humains" element={<RechercherEsgDroitsHumains />} />
           <Route path="/prompt" element={<PromptLibre />} />
-        </Routes>
-      </Layout>
-    </Router>
+            </Routes>
+          </Layout>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

@@ -1,4 +1,117 @@
 export const documentTypes = {
+  correspondance_client: {
+    label: "Correspondance et relation client",
+    options: {
+      courriers_types: {
+        label: "Courriers-types",
+        types: {
+          lettre_relance: {
+            label: "De relance",
+            fields: [
+              { id: "client", label: "Client", type: "text", required: true },
+              { id: "reference", label: "Référence dossier", type: "text", required: true },
+              { id: "objet", label: "Objet", type: "text", required: true },
+              { id: "contenu", label: "Contenu", type: "textarea", required: true },
+              { id: "delai", label: "Délai de réponse", type: "text", required: true }
+            ]
+          },
+          mise_en_demeure: {
+            label: "De mise en demeure",
+            fields: [
+              { id: "destinataire", label: "Destinataire", type: "text", required: true },
+              { id: "reference", label: "Référence dossier", type: "text", required: true },
+              { id: "objet", label: "Objet", type: "text", required: true },
+              { id: "rappel_faits", label: "Rappel des faits", type: "textarea", required: true },
+              { id: "demande", label: "Demande", type: "textarea", required: true },
+              { id: "delai", label: "Délai d'exécution", type: "text", required: true },
+              { id: "consequences", label: "Conséquences en cas de non-exécution", type: "textarea", required: true }
+            ]
+          },
+          information_client: {
+            label: "D'information client",
+            fields: [
+              { id: "client", label: "Client", type: "text", required: true },
+              { id: "reference", label: "Référence dossier", type: "text", required: true },
+              { id: "objet", label: "Objet", type: "text", required: true },
+              { id: "contenu", label: "Contenu", type: "textarea", required: true },
+              { id: "pieces_jointes", label: "Pièces jointes", type: "textarea", required: false }
+            ]
+          }
+        }
+      },
+      memos_explicatifs: {
+        label: "Mémos explicatifs",
+        types: {
+          note_juridique: {
+            label: "Notes juridiques destinées au client",
+            fields: [
+              { id: "client", label: "Client", type: "text", required: true },
+              { id: "reference", label: "Référence dossier", type: "text", required: true },
+              { id: "sujet", label: "Sujet", type: "text", required: true },
+              { id: "problematique", label: "Problématique", type: "textarea", required: true },
+              { id: "analyse", label: "Analyse juridique", type: "textarea", required: true },
+              { id: "conclusion", label: "Conclusion", type: "textarea", required: true },
+              { id: "recommandations", label: "Recommandations", type: "textarea", required: true }
+            ]
+          }
+        }
+      },
+      fiches_client_kyc: {
+        label: "Fiches client / KYC",
+        types: {
+          conformite: {
+            label: "Conformité",
+            fields: [
+              { id: "client", label: "Client", type: "text", required: true },
+              { id: "date", label: "Date", type: "text", required: true },
+              { id: "verification", label: "Vérifications effectuées", type: "textarea", required: true },
+              { id: "resultats", label: "Résultats", type: "textarea", required: true },
+              { id: "niveau_risque", label: "Niveau de risque", type: "text", required: true },
+              { id: "mesures", label: "Mesures à prendre", type: "textarea", required: false }
+            ]
+          },
+          conflits_interets: {
+            label: "Conflits d'intérêts",
+            fields: [
+              { id: "client", label: "Client", type: "text", required: true },
+              { id: "date", label: "Date", type: "text", required: true },
+              { id: "conflits_potentiels", label: "Conflits potentiels identifiés", type: "textarea", required: true },
+              { id: "mesures", label: "Mesures de gestion", type: "textarea", required: true }
+            ]
+          },
+          documentation_identite: {
+            label: "Documentation d'identité",
+            fields: [
+              { id: "client", label: "Client", type: "text", required: true },
+              { id: "date", label: "Date", type: "text", required: true },
+              { id: "documents", label: "Documents fournis", type: "textarea", required: true },
+              { id: "verification", label: "Vérification effectuée", type: "textarea", required: true },
+              { id: "validite", label: "Validité", type: "text", required: true }
+            ]
+          }
+        }
+      },
+      rapports_etape: {
+        label: "Rapports d'étape / reporting",
+        types: {
+          client_institutionnel: {
+            label: "Pour les clients institutionnels",
+            fields: [
+              { id: "client", label: "Client", type: "text", required: true },
+              { id: "reference", label: "Référence dossier", type: "text", required: true },
+              { id: "periode", label: "Période couverte", type: "text", required: true },
+              { id: "resume", label: "Résumé exécutif", type: "textarea", required: true },
+              { id: "actions", label: "Actions entreprises", type: "textarea", required: true },
+              { id: "resultats", label: "Résultats obtenus", type: "textarea", required: true },
+              { id: "prochaines_etapes", label: "Prochaines étapes", type: "textarea", required: true },
+              { id: "budget", label: "Suivi budgétaire", type: "textarea", required: true },
+              { id: "risques", label: "Risques identifiés", type: "textarea", required: false }
+            ]
+          }
+        }
+      }
+    }
+  },
   contrats_actes: {
     label: "Contrats et actes",
     options: {
@@ -352,10 +465,18 @@ export const documentTypes = {
         label: "Actes d'arbitrage",
         types: {
           termes_reference: {
-            label: "Termes de référence",
+            label: "Acte de mission (Terms of Reference)",
             fields: [
-              { id: "parties", label: "Parties", type: "text", required: true },
-              { id: "arbitres", label: "Tribunal arbitral", type: "text", required: true },
+              { id: "partie_demanderesse", label: "Partie en demande", type: "textarea", required: true },
+              { id: "partie_defenderesse", label: "Partie en défense", type: "textarea", required: true },
+              { id: "nombre_arbitres", label: "Nombre d'arbitres", type: "select", options: [
+                { value: "1", label: "1 arbitre" },
+                { value: "3", label: "3 arbitres" }
+              ], required: true },
+              { id: "arbitre_unique", label: "Arbitre unique", type: "text", required: true, condition: { field: "nombre_arbitres", value: "1" } },
+              { id: "arbitre_president", label: "Arbitre président", type: "text", required: true, condition: { field: "nombre_arbitres", value: "3" } },
+              { id: "arbitre_demandeur", label: "Arbitre désigné par le demandeur", type: "text", required: true, condition: { field: "nombre_arbitres", value: "3" } },
+              { id: "arbitre_defendeur", label: "Arbitre désigné par le défendeur", type: "text", required: true, condition: { field: "nombre_arbitres", value: "3" } },
               { id: "litige", label: "Objet du litige", type: "textarea", required: true },
               { id: "procedure", label: "Règles de procédure", type: "textarea", required: true }
             ]
