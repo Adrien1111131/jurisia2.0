@@ -2,13 +2,14 @@ import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaHome, FaFileAlt, FaEdit, FaSearch, FaComments, FaChevronDown, FaChevronRight, FaSun, FaMoon } from 'react-icons/fa';
-import logoImage from '../assets/logo-new.png';
-import plumeIcon from '../assets/plume.png';
-import epeIcon from '../assets/epe.png';
-import homeIcon from '../assets/home.png';
-import couroneIcon from '../assets/courone.png';
-import bouclierIcon from '../assets/bouclier.png';
-import { ThemeContext } from '../contexts/ThemeContext';
+// Utilisation d'imports absolus pour résoudre le problème de build sur Vercel
+import logoImage from 'src/assets/logo-new.png';
+import plumeIcon from 'src/assets/plume.png';
+import epeIcon from 'src/assets/epe.png';
+import homeIcon from 'src/assets/home.png';
+import couroneIcon from 'src/assets/courone.png';
+import bouclierIcon from 'src/assets/bouclier.png';
+import { ThemeContext } from 'src/contexts/ThemeContext';
 
 const SidebarContainer = styled.div`
   width: 280px;
