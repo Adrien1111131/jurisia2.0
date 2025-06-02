@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaHome, FaFileAlt, FaEdit, FaSearch, FaComments, FaChevronDown, FaChevronRight, FaGavel, FaBalanceScale, FaEnvelope, FaShieldAlt } from 'react-icons/fa';
+import { FaHome, FaFileAlt, FaEdit, FaSearch, FaComments, FaChevronDown, FaChevronRight, FaSun, FaMoon } from 'react-icons/fa';
 import logoImage from '../assets/logo-new.png';
+import plumeIcon from '../assets/plume.png';
+import epeIcon from '../assets/epe.png';
+import homeIcon from '../assets/home.png';
+import couroneIcon from '../assets/courone.png';
+import bouclierIcon from '../assets/bouclier.png';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 const SidebarContainer = styled.div`
   width: 280px;
@@ -18,6 +24,13 @@ const SidebarContainer = styled.div`
   z-index: 1000;
   border-right: 1px solid rgba(106, 17, 203, 0.2);
   background-image: linear-gradient(to bottom, var(--darker-bg), rgba(42, 47, 69, 0.95));
+  transition: background 0.3s ease, color 0.3s ease;
+  
+  .light & {
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    border-right: 1px solid #f0f0f0;
+  }
   
   @media (max-width: 768px) {
     width: 240px;
@@ -28,10 +41,54 @@ const SidebarContainer = styled.div`
   }
 `;
 
+const TopBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid #2d2d42;
+  
+  .light & {
+    border-bottom: 1px solid #f0f0f0;
+  }
+`;
+
+const ThemeToggle = styled.button`
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    background: rgba(106, 17, 203, 0.2);
+  }
+  
+  .light &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  svg {
+    filter: drop-shadow(0 0 3px rgba(37, 117, 252, 0.3));
+  }
+  
+  .light & svg {
+    filter: none;
+    color: #555555;
+  }
+`;
+
 const Logo = styled.div`
   padding: 10px 20px 20px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #2d2d42;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -79,6 +136,24 @@ const MenuItem = styled.div`
     filter: drop-shadow(0 0 3px rgba(37, 117, 252, 0.3));
   }
   
+  .light & {
+    &:hover {
+      background: #f8f9fa;
+      border-left: 3px solid var(--primary-color);
+      box-shadow: none;
+    }
+    
+    &.active {
+      background: #f8f9fa;
+      border-left: 3px solid var(--primary-color);
+    }
+    
+    svg {
+      color: var(--primary-color);
+      filter: none;
+    }
+  }
+  
   @media (max-width: 576px) {
     padding: 12px 15px;
     
@@ -103,6 +178,18 @@ const MenuLink = styled(Link)`
     -webkit-text-fill-color: transparent;
     font-weight: 600;
   }
+  
+  .light & {
+    color: #444444;
+    font-weight: 500;
+    
+    &.active {
+      color: var(--primary-color);
+      background: none;
+      -webkit-text-fill-color: var(--primary-color);
+      font-weight: 600;
+    }
+  }
 `;
 
 const SubMenu = styled.div`
@@ -118,6 +205,12 @@ const SubMenu = styled.div`
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
+  
+  .light & {
+    background: rgba(248, 249, 250, 0.9);
+    border-left: 1px solid rgba(106, 17, 203, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
 `;
 
 const SubMenuItem = styled.div`
@@ -135,6 +228,14 @@ const SubMenuItem = styled.div`
     box-shadow: inset 0 0 8px rgba(106, 17, 203, 0.1);
   }
   
+  .light & {
+    &:hover {
+      background: rgba(106, 17, 203, 0.1);
+      border-left: 2px solid var(--primary-color);
+      box-shadow: none;
+    }
+  }
+  
   @media (max-width: 576px) {
     padding: 12px 15px;
   }
@@ -146,6 +247,8 @@ const Sidebar = () => {
     rechercher: false,
     prompt: false
   });
+  
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const toggleSubMenu = (menu) => {
     setSubMenuOpen({
@@ -156,6 +259,11 @@ const Sidebar = () => {
 
   return (
     <SidebarContainer>
+      <TopBar>
+        <ThemeToggle onClick={toggleTheme} title={theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre'}>
+          {theme === 'dark' ? <FaSun /> : <FaMoon />}
+        </ThemeToggle>
+      </TopBar>
       <Logo>
         <img src={logoImage} alt="Jurisia Logo" />
       </Logo>
@@ -184,31 +292,31 @@ const Sidebar = () => {
       <SubMenu $isOpen={subMenuOpen.rediger} style={{ maxHeight: subMenuOpen.rediger ? '1000px' : '0' }}>
         <SubMenuItem>
           <MenuLink to="/contrats-et-actes">
-            <FaGavel style={{ marginRight: '8px' }} />
+            <img src={plumeIcon} alt="Contrats" style={{ width: '36px', height: '36px', marginRight: '8px' }} />
             Contrats et actes
           </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
           <MenuLink to="/contentieux-arbitrage">
-            <FaBalanceScale style={{ marginRight: '8px' }} />
+            <img src={epeIcon} alt="Contentieux" style={{ width: '36px', height: '36px', marginRight: '8px' }} />
             Contentieux et arbitrage
           </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
           <MenuLink to="/documents-internes">
-            <FaFileAlt style={{ marginRight: '8px' }} />
+            <img src={homeIcon} alt="Documents" style={{ width: '36px', height: '36px', marginRight: '8px' }} />
             Documents internes et organisationnels
           </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
           <MenuLink to="/correspondance-client">
-            <FaEnvelope style={{ marginRight: '8px' }} />
+            <img src={couroneIcon} alt="Correspondance" style={{ width: '36px', height: '36px', marginRight: '8px' }} />
             Correspondance et relation client
           </MenuLink>
         </SubMenuItem>
         <SubMenuItem>
           <MenuLink to="/conformite-deontologie">
-            <FaShieldAlt style={{ marginRight: '8px' }} />
+            <img src={bouclierIcon} alt="Conformité" style={{ width: '36px', height: '36px', marginRight: '8px' }} />
             Conformité et déontologie
           </MenuLink>
         </SubMenuItem>
